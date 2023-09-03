@@ -9,8 +9,45 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: const Center(
-        child: Text('Hello World'),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        color: tdBGColor,
+        child: Column(
+          children: [
+            searchBox(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget searchBox() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      constraints: BoxConstraints(maxHeight: 40),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: TextField(
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(12),
+          prefixIcon: Icon(
+            Icons.search,
+            color: tdBlack,
+            size: 20,
+          ),
+          prefixIconConstraints: BoxConstraints(
+            maxHeight: 20,
+            minWidth: 25,
+          ),
+          border: InputBorder.none,
+          hintText: 'Search',
+          hintStyle: TextStyle(
+            color: tdGray,
+            fontSize: 17,
+          ),
+        ),
       ),
     );
   }
