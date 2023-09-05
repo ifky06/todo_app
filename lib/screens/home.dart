@@ -13,33 +13,79 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        color: tdBGColor,
-        child: Column(
-          children: [
-            searchBox(),
-            Expanded(
-                child: ListView(
+      body: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            color: tdBGColor,
+            child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.only(top: 50, bottom: 20),
-                  child: Text(
-                    'All Todos',
-                    style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                        color: tdBlack),
+                searchBox(),
+                Expanded(
+                    child: ListView(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 50, bottom: 20),
+                      child: Text(
+                        'All Todos',
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500,
+                            color: tdBlack),
+                      ),
+                    ),
+                    for (var todo in todosList)
+                      ToDoItem(
+                        todo: todo,
+                      ),
+                  ],
+                ))
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(children: [
+              Expanded(
+                  child: Container(
+                margin: EdgeInsets.only(left: 20, right: 10, bottom: 20),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      blurRadius: 10,
+                      offset: Offset(0.0, 0.0),
+                      spreadRadius: 0.0,
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Add a new task',
+                    border: InputBorder.none,
                   ),
                 ),
-                for (var todo in todosList)
-                  ToDoItem(
-                    todo: todo,
-                  ),
-              ],
-            ))
-          ],
-        ),
+              )),
+              Container(
+                margin: EdgeInsets.only(right: 20, bottom: 20),
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: tdBlue,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              )
+            ]),
+          )
+        ],
       ),
     );
   }
