@@ -3,10 +3,23 @@ import 'package:todo_app/constants/colors.dart';
 import 'package:todo_app/model/todo.dart';
 import 'package:todo_app/widgets/todo_item.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final todosList = ToDo.toDoList();
+  List<ToDo> _filteredList = [];
+  final _todoController = TextEditingController();
+
+  @override
+  void initState() {
+    _filteredList = todosList;
+    super.initState();
+  }
 
   // This widget is the root of your application.
   @override
@@ -34,59 +47,116 @@ class Home extends StatelessWidget {
                             color: tdBlack),
                       ),
                     ),
-                    for (var todo in todosList)
+                    for (var todo in _filteredList.reversed)
                       ToDoItem(
                         todo: todo,
+                        onToDoChanged: _handleToDoChange,
+                        onDeleteItem: _handleDeleteItem,
                       ),
                   ],
                 ))
               ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(children: [
-              Expanded(
-                  child: Container(
-                margin: EdgeInsets.only(left: 20, right: 10, bottom: 20),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: Offset(0.0, 0.0),
-                      spreadRadius: 0.0,
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Add a new task',
-                    border: InputBorder.none,
-                  ),
-                ),
-              )),
-              Container(
-                margin: EdgeInsets.only(right: 20, bottom: 20),
-                height: 60,
-                width: 60,
-                decoration: BoxDecoration(
-                  color: tdBlue,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              )
-            ]),
-          )
+          inputFieldToDo(),
         ],
       ),
+    );
+  }
+
+  void _handleToDoChange(ToDo todo) {
+    setState(() {
+      todo.isDone = !todo.isDone!;
+    });
+  }
+
+  void _handleDeleteItem(String id) {
+    setState(() {
+      todosList.removeWhere((element) => element.id == id);
+    });
+  }
+
+  void _addToDoItem(String toDo) {
+    setState(() {
+      todosList.add(ToDo(
+        id: DateTime.now().toString(),
+        todoText: toDo,
+      ));
+    });
+    _todoController.clear();
+  }
+
+  void _runFilter(String enteredKeyword) {
+    List<ToDo> results = [];
+    if (enteredKeyword.isEmpty) {
+      results = todosList;
+    } else {
+      results = todosList
+          .where((todo) => todo.todoText!
+              .toLowerCase()
+              .contains(enteredKeyword.toLowerCase()))
+          .toList();
+    }
+
+    setState(() {
+      _filteredList = results;
+    });
+  }
+
+  Widget inputFieldToDo() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Row(children: [
+        Expanded(
+            child: Container(
+          margin: EdgeInsets.only(left: 20, right: 10, bottom: 20),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                blurRadius: 10,
+                offset: Offset(0.0, 0.0),
+                spreadRadius: 0.0,
+              ),
+            ],
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: _todoController,
+            decoration: InputDecoration(
+              hintText: 'Add a new task',
+              border: InputBorder.none,
+            ),
+          ),
+        )),
+        Container(
+          margin: EdgeInsets.only(right: 20, bottom: 20),
+          height: 60,
+          width: 60,
+          decoration: BoxDecoration(
+            color: tdBlue,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: ElevatedButton(
+            onPressed: () {
+              _addToDoItem(_todoController.text);
+            },
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 30,
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: tdBlue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ),
+        )
+      ]),
     );
   }
 
@@ -99,6 +169,7 @@ class Home extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
+        onChanged: (value) => _runFilter(value),
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(12),
           prefixIcon: Icon(
